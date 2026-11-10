@@ -1,10 +1,11 @@
 {
-  "name": "Caderno Mente",
+  "name": "Caderno Mente — Consulta Offline",
   "short_name": "Caderno Mente",
-  "description": "Assistente de Consulta Offline",
+  "description": "Assistente de Consulta Offline para Provas e Estudos",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#F8FAF8",
   "theme_color": "#3B6047",
   "icons": [

@@ -1,672 +1,295 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Caderno Mente — Consulta Offline</title>
-  
-  <!-- Favicon / Touch Icon para Tela Inicial do Tablet -->
-  <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23ec4899'/><path d='M30 25h40a5 5 0 0 1 5 5v40a5 5 0 0 1-5 5H30a5 5 0 0 1-5-5V30a5 5 0 0 1 5-5z' fill='white' opacity='0.9'/><path d='M35 35h30M35 45h25M35 55h20' stroke='%23ec4899' stroke-width='4' stroke-linecap='round'/></svg>">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%23ec4899'/><path d='M30 25h40a5 5 0 0 1 5 5v40a5 5 0 0 1-5 5H30a5 5 0 0 1-5-5V30a5 5 0 0 1 5-5z' fill='white' opacity='0.9'/><path d='M35 35h30M35 45h25M35 55h20' stroke='%23ec4899' stroke-width='4' stroke-linecap='round'/></svg>">
-
-  <!-- Tailwind CSS -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3B6047">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3389/3389081.png">
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- PDF.js para extração local de texto -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#fdf2f8',
-              100: '#fce7f3',
-              200: '#fbcfe8',
-              300: '#f472b6',
-              400: '#e879f9',
-              500: '#ec4899',
-              600: '#db2777',
-              700: '#be185d',
-              800: '#9d174d',
-            }
-          }
-        }
-      }
-    }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   </script>
-
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: #f8fafc;
-      color: #0f172a;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
-    }
-  </style>
 </head>
-<body class="h-full flex flex-col overflow-hidden text-slate-800">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
 
-  <!-- BARRA SUPERIOR COM MARCA E LOGO -->
-  <header class="h-14 bg-white border-b border-slate-200/80 px-4 flex items-center justify-between shrink-0 z-20">
-    <div class="flex items-center gap-3">
-      <!-- Logo do App (Caderno Stylized SVG) -->
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-pink-500 to-rose-400 p-0.5 shadow-md flex items-center justify-center">
-        <div class="w-full h-full bg-white rounded-[10px] flex items-center justify-center">
-          <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-          </svg>
-        </div>
+  <!-- Tela de Boas-Vindas / Instalação -->
+  <div id="welcomeScreen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-center space-y-5">
+      <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center mx-auto text-3xl font-bold shadow-sm">
+        📚
       </div>
       <div>
-        <div class="flex items-center gap-1.5">
-          <h1 class="font-bold text-slate-900 text-sm md:text-base leading-none">Caderno Mente</h1>
-          <span class="text-[9px] font-extrabold uppercase tracking-widest bg-brand-100 text-brand-700 px-1.5 py-0.5 rounded-md">Pro</span>
-        </div>
-        <p class="text-[10px] text-slate-400 font-medium mt-0.5">Consulta Acadêmica 100% Offline</p>
+        <h2 class="text-2xl font-bold text-slate-800">Caderno Mente</h2>
+        <p class="text-sm text-slate-500 mt-1">Assistente de Consulta 100% Offline</p>
+      </div>
+      <p class="text-xs text-slate-600 bg-emerald-50 p-3 rounded-xl border border-emerald-100 leading-relaxed text-left">
+        ✨ <strong>Dica para a Prova:</strong> Adicione o aplicativo à tela inicial para garantir abertura instantânea no Modo Avião, sem precisar do navegador!
+      </p>
+      <div class="space-y-2 pt-2">
+        <button id="installBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
+          <span>📲</span> Instalar App na Tela Inicial
+        </button>
+        <button id="enterAppBtn" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 px-4 rounded-xl transition text-xs">
+          Continuar sem instalar
+        </button>
       </div>
     </div>
+  </div>
 
+  <!-- Cabeçalho Principal -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-3 flex items-center justify-between shadow-sm">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 bg-emerald-700 text-white rounded-xl flex items-center justify-center text-lg font-bold shadow-sm">
+        📚
+      </div>
+      <div>
+        <h1 class="font-bold text-slate-800 leading-tight">Caderno Mente</h1>
+        <span class="text-[10px] uppercase tracking-wider font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Offline Ready</span>
+      </div>
+    </div>
     <div class="flex items-center gap-2">
-      <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="hidden sm:inline">Modo Avião Pronto</span>
-      </span>
-
-      <button onclick="toggleScratchpad()" class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition flex items-center gap-1.5">
-        <i class="fa-solid fa-pen-to-square text-brand-600"></i>
-        <span class="hidden sm:inline">Rascunho</span>
+      <button id="topInstallBtn" class="hidden sm:flex items-center gap-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200 transition">
+        <span>📲</span> Instalar na Tela Inicial
       </button>
-
-      <button onclick="exportWorkspace()" title="Exportar Backup JSON" class="p-2 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition">
-        <i class="fa-solid fa-download"></i>
-      </button>
-      <label title="Restaurar Backup JSON" class="p-2 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition cursor-pointer">
-        <i class="fa-solid fa-upload"></i>
-        <input type="file" id="import-file" accept=".json" class="hidden" onchange="importWorkspace(event)">
-      </label>
     </div>
   </header>
 
-  <!-- WORKSPACE PRINCIPAL -->
-  <div class="flex-1 flex min-h-0 relative">
-
-    <!-- PAINEL LATERAL: CADERNOS & DOCUMENTOS -->
-    <aside id="sidebar" class="w-80 bg-white border-r border-slate-200/80 flex flex-col shrink-0 min-h-0 z-10 transition-all duration-200">
+  <!-- Layout Principal -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 md:grid-cols-12 gap-6">
+    
+    <!-- Coluna Esquerda: Cadernos e Arquivos -->
+    <aside class="md:col-span-4 lg:col-span-3 space-y-6">
       
-      <!-- Seção: Cadernos -->
-      <div class="p-3 border-b border-slate-100">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Seus Cadernos</span>
-          <button onclick="createNewNotebook()" class="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1">
-            <i class="fa-solid fa-plus"></i> Novo
-          </button>
+      <!-- Seção de Cadernos -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cadernos</h2>
+          <button id="newNotebookBtn" class="text-xs font-semibold text-emerald-700 hover:underline">+ Criar</button>
         </div>
-        <div id="notebook-list" class="flex gap-1.5 overflow-x-auto pb-1 custom-scrollbar">
-          <!-- Renderizado via JS -->
+        <div id="notebooksList" class="space-y-1">
+          <!-- Lista de cadernos renderizada via JS -->
         </div>
       </div>
 
-      <!-- Seção: Documentos do Caderno -->
-      <div class="flex-1 flex flex-col min-h-0 p-3">
-        <div class="flex items-center justify-between mb-2">
-          <span id="active-notebook-title" class="text-xs font-bold text-slate-700 truncate">Documentos</span>
-          <span id="doc-count-badge" class="text-[10px] font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">0</span>
-        </div>
-
-        <!-- Botão/Zona de Carregamento -->
-        <div id="drop-zone" class="border border-dashed border-slate-200 hover:border-brand-300 bg-slate-50/60 hover:bg-brand-50/30 rounded-xl p-3 text-center cursor-pointer transition mb-3">
-          <i class="fa-solid fa-file-arrow-up text-brand-500 text-lg mb-1"></i>
-          <p class="text-xs font-semibold text-slate-700">Adicionar PDFs ou TXT</p>
-          <p class="text-[10px] text-slate-400 mt-0.5">Clique ou arraste seus arquivos aqui</p>
-          <input type="file" id="file-input" multiple accept=".pdf,.txt" class="hidden" onchange="handleFileUpload(event)">
-        </div>
-
-        <button onclick="openNoteModal()" class="w-full py-2 px-3 rounded-lg bg-slate-100 hover:bg-slate-200/70 text-slate-700 text-xs font-semibold transition flex items-center justify-center gap-1.5 mb-3">
-          <i class="fa-solid fa-note-sticky text-slate-500"></i>
-          <span>Criar Anotação Rápida</span>
-        </button>
-
-        <!-- Lista de PDFs/Textos -->
-        <div class="flex-1 overflow-y-auto space-y-1.5 custom-scrollbar pr-0.5" id="document-list">
-          <!-- Renderizado via JS -->
+      <!-- Seção de Upload de Materiais -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Adicionar PDFs / Notas</h2>
+        <label class="block w-full cursor-pointer bg-slate-50 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-4 text-center transition">
+          <input type="file" id="fileInput" multiple accept=".pdf,.txt" class="hidden" />
+          <span class="text-2xl block mb-1">📄</span>
+          <span class="text-xs font-semibold text-slate-600 block">Clique para enviar arquivos</span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">Suporta PDF e Bloco de Notas (TXT)</span>
+        </label>
+        <div id="filesList" class="space-y-1.5 pt-1 max-h-48 overflow-y-auto">
+          <!-- Lista de arquivos do caderno ativo -->
         </div>
       </div>
 
     </aside>
 
-    <!-- ÁREA CENTRAL DE BUSCA & CONSULTA -->
-    <main class="flex-1 flex flex-col bg-slate-50/70 min-h-0">
+    <!-- Coluna Direita: Busca e Consultas -->
+    <section class="md:col-span-8 lg:col-span-9 space-y-6">
       
-      <!-- Cabeçalho de Pesquisa -->
-      <div class="p-4 bg-white border-b border-slate-200/80 flex flex-col gap-3 shadow-sm z-10">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-sm font-bold text-slate-800">Pesquisa nos Cadernos</h2>
-            <p class="text-xs text-slate-400">Consulte conceitos, dúvidas ou termos das questões da prova</p>
-          </div>
-          <button onclick="clearChat()" class="text-xs text-slate-400 hover:text-rose-600 transition font-medium">
-            <i class="fa-solid fa-trash-can mr-1"></i>Limpar Painel
-          </button>
+      <!-- Caixa de Pergunta -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">Consulta ao Caderno</h2>
+          <p class="text-xs text-slate-500">Digite a questão da prova ou conceito para encontrar o trecho exato nos seus PDFs.</p>
         </div>
-
-        <!-- Campo de Pesquisa -->
-        <div class="relative flex items-center">
-          <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-sm"></i>
-          <input 
-            type="text" 
-            id="query-input" 
-            placeholder="Ex: Qual a função da via alternativa do complemento?" 
-            class="w-full pl-10 pr-24 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition"
-            onkeydown="if(event.key === 'Enter') executeQuery()"
-          >
-          <button 
-            onclick="executeQuery()" 
-            class="absolute right-1.5 px-4 py-1.5 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-xs font-semibold transition shadow-sm"
-          >
+        <div class="flex gap-2">
+          <input type="text" id="searchInput" placeholder="Ex: Qual é a via alternativa do complemento?" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition" />
+          <button id="searchBtn" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-6 py-3 rounded-xl shadow-sm text-sm transition">
             Pesquisar
           </button>
         </div>
       </div>
 
-      <!-- Feed de Resultados -->
-      <div id="chat-history" class="flex-1 p-4 md:p-6 overflow-y-auto space-y-4 custom-scrollbar">
-        <div class="max-w-2xl mx-auto bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm space-y-3">
-          <div class="flex items-center gap-2 text-brand-600 font-bold text-sm">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span>Caderno Mente — Pronto para Uso</span>
-          </div>
-          <p class="text-xs text-slate-600 leading-relaxed">
-            Todos os seus arquivos carregados são armazenados localmente no seu tablet. Você pode desligar a internet e colocar o tablet em <strong>Modo Avião</strong> durante a prova.
-          </p>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-500 pt-1">
-            <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <i class="fa-solid fa-check text-emerald-500"></i>
-              <span>Busca por termos exatos</span>
-            </div>
-            <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-              <i class="fa-solid fa-check text-emerald-500"></i>
-              <span>Localização de trechos e páginas</span>
-            </div>
-          </div>
+      <!-- Área de Resultados -->
+      <div id="resultsArea" class="space-y-4">
+        <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-400">
+          <span class="text-3xl block mb-2">🔍</span>
+          <p class="text-sm">Selecione um caderno, envie seus PDFs e faça sua primeira busca.</p>
         </div>
       </div>
 
-    </main>
+    </section>
 
-    <!-- RASCUNHO FLUTUANTE DE RESPOSTAS -->
-    <div id="scratchpad-panel" class="hidden absolute right-0 top-0 bottom-0 w-80 md:w-96 bg-white border-l border-slate-200/90 shadow-2xl flex-col z-30">
-      <div class="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-        <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-          <i class="fa-solid fa-pen-to-square text-brand-600"></i> Rascunho da Prova
-        </span>
-        <button onclick="toggleScratchpad()" class="text-slate-400 hover:text-slate-600 p-1">
-          <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-      </div>
-      <div class="p-3 flex-1 flex flex-col gap-2">
-        <p class="text-[11px] text-slate-400">Organize sua resposta dissertativa aqui antes de passar para a folha oficial.</p>
-        <textarea id="scratchpad-text" class="flex-1 w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium leading-relaxed focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 resize-none custom-scrollbar" placeholder="Escreva seu rascunho..."></textarea>
-        <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1">
-          <span id="scratchpad-counter">0 caracteres</span>
-          <button onclick="copyScratchpad()" class="text-brand-600 font-semibold hover:underline">Copiar Rascunho</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- MODAL DE PÁGINA COMPLETA DA FONTE -->
-  <div id="page-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden">
-      <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <div class="flex items-center gap-2 overflow-hidden">
-          <i class="fa-solid fa-file-lines text-brand-600"></i>
-          <span id="modal-source-title" class="text-xs font-bold text-slate-800 truncate">Visualizar Fonte</span>
-        </div>
-        <button onclick="closePageModal()" class="text-slate-400 hover:text-slate-600 p-1">
-          <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-      </div>
-      <div id="modal-source-content" class="p-5 overflow-y-auto text-xs text-slate-700 leading-relaxed font-normal whitespace-pre-wrap custom-scrollbar flex-1 select-text"></div>
-    </div>
-  </div>
-
-  <!-- MODAL PARA NOVA ANOTAÇÃO -->
-  <div id="note-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden">
-      <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
-        <span class="text-xs font-bold text-slate-800">Nova Anotação de Aula</span>
-        <button onclick="closeNoteModal()" class="text-slate-400 hover:text-slate-600 p-1">
-          <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
-      </div>
-      <div class="p-5 space-y-3">
-        <div>
-          <label class="block text-[11px] font-bold text-slate-600 mb-1">Título da Nota</label>
-          <input type="text" id="note-title" placeholder="Ex: Resumo - Imunidade Inata" class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-slate-600 mb-1">Conteúdo da Nota</label>
-          <textarea id="note-content" rows="6" placeholder="Escreva os pontos principais..." class="w-full border border-slate-200 rounded-xl p-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 resize-none custom-scrollbar"></textarea>
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <button onclick="closeNoteModal()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button>
-          <button onclick="saveManualNote()" class="px-4 py-1.5 rounded-lg bg-brand-600 text-xs font-semibold text-white hover:bg-brand-700">Salvar Nota</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  </main>
 
   <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+    // Registro do Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+      });
+    }
 
-    let db = {
-      notebooks: [],
-      activeNotebookId: null,
-      documents: [],
-      scratchpad: ''
+    // Gerenciador de Instalação PWA
+    let deferredPrompt;
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const installBtn = document.getElementById('installBtn');
+    const enterAppBtn = document.getElementById('enterAppBtn');
+    const topInstallBtn = document.getElementById('topInstallBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      topInstallBtn.classList.remove('hidden');
+    });
+
+    const triggerInstall = async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          welcomeScreen.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      } else {
+        alert("Para instalar na tela inicial do tablet:\n\n1. Toque nos 3 pontinhos (⋮) do Chrome.\n2. Selecione 'Adicionar à tela inicial' ou 'Instalar aplicativo'.");
+      }
     };
 
-    window.onload = function() {
-      loadFromStorage();
-      if (db.notebooks.length === 0) {
-        const defaultId = Date.now().toString();
-        db.notebooks.push({ id: defaultId, name: 'Imunologia' });
-        db.activeNotebookId = defaultId;
-        saveToStorage();
+    installBtn.addEventListener('click', triggerInstall);
+    topInstallBtn.addEventListener('click', triggerInstall);
+    enterAppBtn.addEventListener('click', () => welcomeScreen.classList.add('hidden'));
+
+    // Lógica Básica de Armazenamento e Leitura
+    let currentNotebook = 'Imunologia';
+    let notebooks = JSON.parse(localStorage.getItem('caderno_mente_data') || '{"Imunologia": []}');
+
+    function saveState() {
+      localStorage.setItem('caderno_mente_data', JSON.stringify(notebooks));
+      renderNotebooks();
+      renderFiles();
+    }
+
+    function renderNotebooks() {
+      const list = document.getElementById('notebooksList');
+      list.innerHTML = '';
+      Object.keys(notebooks).forEach(name => {
+        const btn = document.createElement('button');
+        btn.className = `w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition flex justify-between items-center ${name === currentNotebook ? 'bg-emerald-50 text-emerald-800 font-bold border border-emerald-200' : 'text-slate-600 hover:bg-slate-50'}`;
+        btn.innerHTML = `<span>📂 ${name}</span> <span class="text-[10px] text-slate-400">${notebooks[name].length} arq</span>`;
+        btn.onclick = () => { currentNotebook = name; renderNotebooks(); renderFiles(); };
+        list.appendChild(btn);
+      });
+    }
+
+    function renderFiles() {
+      const list = document.getElementById('filesList');
+      list.innerHTML = '';
+      const files = notebooks[currentNotebook] || [];
+      if (files.length === 0) {
+        list.innerHTML = '<span class="text-[11px] text-slate-400 italic block text-center py-2">Nenhum PDF carregado neste caderno.</span>';
+        return;
       }
-      
-      const scratchpadText = document.getElementById('scratchpad-text');
-      scratchpadText.value = db.scratchpad || '';
-      updateScratchpadCounter();
-
-      scratchpadText.addEventListener('input', (e) => {
-        db.scratchpad = e.target.value;
-        updateScratchpadCounter();
-        saveToStorage();
+      files.forEach((file, idx) => {
+        const item = document.createElement('div');
+        item.className = 'flex justify-between items-center text-xs p-2 bg-slate-50 rounded-lg border border-slate-100';
+        item.innerHTML = `<span class="truncate max-w-[150px] font-medium text-slate-700">📑 ${file.name}</span><button onclick="removeFile(${idx})" class="text-rose-500 hover:text-rose-700 text-[10px]">Excluir</button>`;
+        list.appendChild(item);
       });
+    }
 
-      renderUI();
-
-      const dropZone = document.getElementById('drop-zone');
-      dropZone.addEventListener('click', () => document.getElementById('file-input').click());
-      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('bg-brand-50/50'); });
-      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('bg-brand-50/50'));
-      dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('bg-brand-50/50');
-        if (e.dataTransfer.files.length) processFiles(e.dataTransfer.files);
-      });
+    document.getElementById('newNotebookBtn').onclick = () => {
+      const name = prompt('Nome da nova matéria/caderno:');
+      if (name && !notebooks[name]) {
+        notebooks[name] = [];
+        currentNotebook = name;
+        saveState();
+      }
     };
 
-    function saveToStorage() {
-      try { localStorage.setItem('caderno_mente_db_v1', JSON.stringify(db)); } catch (e) { console.warn(e); }
+    function removeFile(idx) {
+      notebooks[currentNotebook].splice(idx, 1);
+      saveState();
     }
 
-    function loadFromStorage() {
-      const data = localStorage.getItem('caderno_mente_db_v1');
-      if (data) { try { db = JSON.parse(data); } catch (e) { console.error(e); } }
-    }
-
-    function createNewNotebook() {
-      const name = prompt('Nome da nova matéria / caderno:');
-      if (name && name.trim()) {
-        const newId = Date.now().toString();
-        db.notebooks.push({ id: newId, name: name.trim() });
-        db.activeNotebookId = newId;
-        saveToStorage();
-        renderUI();
-      }
-    }
-
-    function selectNotebook(id) {
-      db.activeNotebookId = id;
-      saveToStorage();
-      renderUI();
-    }
-
-    function deleteNotebook(id, e) {
-      e.stopPropagation();
-      if (confirm('Deseja excluir este caderno e todos os seus arquivos?')) {
-        db.notebooks = db.notebooks.filter(n => n.id !== id);
-        db.documents = db.documents.filter(d => d.notebookId !== id);
-        if (db.activeNotebookId === id) {
-          db.activeNotebookId = db.notebooks.length > 0 ? db.notebooks[0].id : null;
+    // Leitura e Busca de PDFs
+    document.getElementById('fileInput').addEventListener('change', async (e) => {
+      const loadedFiles = Array.from(e.target.files);
+      for (const file of loadedFiles) {
+        if (file.type === 'application/pdf') {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          let fullText = [];
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText.push({ page: i, text: pageText });
+          }
+          notebooks[currentNotebook].push({ name: file.name, pages: fullText });
+        } else if (file.type === 'text/plain') {
+          const text = await file.text();
+          notebooks[currentNotebook].push({ name: file.name, pages: [{ page: 1, text }] });
         }
-        saveToStorage();
-        renderUI();
       }
-    }
+      saveState();
+    });
 
-    function handleFileUpload(e) {
-      if (e.target.files.length) processFiles(e.target.files);
-    }
+    // Mecanismo de Busca Estrita com Dica de Página
+    document.getElementById('searchBtn').onclick = performSearch;
+    document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') performSearch(); };
 
-    async function processFiles(files) {
-      if (!db.activeNotebookId) { alert('Crie ou selecione um caderno primeiro.'); return; }
-      for (let file of files) {
-        if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) { await processPDF(file); }
-        else if (file.type === 'text/plain' || file.name.endsWith('.txt')) { await processTXT(file); }
-      }
-      saveToStorage();
-      renderUI();
-    }
-
-    async function processPDF(file) {
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        const pagesData = [];
-        for (let i = 1; i <= pdf.numPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          const pageText = textContent.items.map(item => item.str).join(' ');
-          pagesData.push({ pageNum: i, text: pageText });
-        }
-        db.documents.push({
-          id: Date.now().toString() + Math.random().toString().substr(2, 4),
-          notebookId: db.activeNotebookId,
-          name: file.name,
-          type: 'pdf',
-          pages: pagesData
-        });
-      } catch (err) { alert('Erro ao ler PDF localmente: ' + file.name); }
-    }
-
-    function processTXT(file) {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          db.documents.push({
-            id: Date.now().toString() + Math.random().toString().substr(2, 4),
-            notebookId: db.activeNotebookId,
-            name: file.name,
-            type: 'txt',
-            pages: [{ pageNum: 1, text: e.target.result }]
-          });
-          resolve();
-        };
-        reader.readAsText(file);
-      });
-    }
-
-    function saveManualNote() {
-      const title = document.getElementById('note-title').value.trim();
-      const content = document.getElementById('note-content').value.trim();
-      if (!title || !content) return;
-
-      db.documents.push({
-        id: Date.now().toString(),
-        notebookId: db.activeNotebookId,
-        name: title + ' (Nota)',
-        type: 'note',
-        pages: [{ pageNum: 1, text: content }]
-      });
-
-      saveToStorage();
-      closeNoteModal();
-      document.getElementById('note-title').value = '';
-      document.getElementById('note-content').value = '';
-      renderUI();
-    }
-
-    function deleteDocument(docId) {
-      if (confirm('Remover este arquivo?')) {
-        db.documents = db.documents.filter(d => d.id !== docId);
-        saveToStorage();
-        renderUI();
-      }
-    }
-
-    function executeQuery() {
-      const input = document.getElementById('query-input');
-      const query = input.value.trim();
+    function performSearch() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const resultsArea = document.getElementById('resultsArea');
       if (!query) return;
 
-      const activeDocs = db.documents.filter(d => d.notebookId === db.activeNotebookId);
-      if (activeDocs.length === 0) { alert('Adicione pelo menos um arquivo ao caderno atual!'); return; }
+      const files = notebooks[currentNotebook] || [];
+      if (files.length === 0) {
+        resultsArea.innerHTML = '<div class="bg-amber-50 text-amber-800 p-4 rounded-xl border border-amber-200 text-xs">Adicione arquivos PDF primeiro para poder consultar.</div>';
+        return;
+      }
 
-      input.value = '';
-      appendUserMessage(query);
-
-      setTimeout(() => {
-        const result = searchInDocuments(query, activeDocs);
-        appendSystemResult(result);
-      }, 50);
-    }
-
-    function searchInDocuments(query, docs) {
-      const terms = query.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(/\s+/).filter(t => t.length > 2);
+      const terms = query.split(' ').filter(t => t.length > 2);
       let matches = [];
 
-      docs.forEach(doc => {
-        doc.pages.forEach(page => {
-          const lowerText = page.text.toLowerCase();
+      files.forEach(file => {
+        file.pages.forEach(p => {
+          const textLower = p.text.toLowerCase();
           let score = 0;
-          terms.forEach(term => {
-            const regex = new RegExp(term, 'g');
-            const count = (lowerText.match(regex) || []).length;
-            score += count;
-          });
+          terms.forEach(t => { if (textLower.includes(t)) score++; });
           if (score > 0) {
-            matches.push({ docName: doc.name, pageNum: page.pageNum, fullText: page.text, score: score });
+            matches.push({ fileName: file.name, page: p.page, text: p.text, score });
           }
         });
       });
 
       matches.sort((a, b) => b.score - a.score);
 
-      if (matches.length > 0 && matches[0].score >= 2) {
-        const top = matches[0];
-        return { type: 'exact', docName: top.docName, pageNum: top.pageNum, excerpt: extractSnippet(top.fullText, terms), fullText: top.fullText };
-      } else if (matches.length > 0) {
-        const top = matches[0];
-        return { type: 'hint', docName: top.docName, pageNum: top.pageNum, excerpt: extractSnippet(top.fullText, terms), fullText: top.fullText };
-      } else {
-        return { type: 'none' };
-      }
-    }
-
-    function extractSnippet(text, terms) {
-      const lower = text.toLowerCase();
-      let firstIdx = -1;
-      for (let t of terms) {
-        let idx = lower.indexOf(t);
-        if (idx !== -1) { firstIdx = idx; break; }
-      }
-      if (firstIdx === -1) firstIdx = 0;
-      const start = Math.max(0, firstIdx - 90);
-      const end = Math.min(text.length, firstIdx + 240);
-      let snippet = text.substring(start, end).trim();
-      if (start > 0) snippet = "..." + snippet;
-      if (end < text.length) snippet = snippet + "...";
-      return snippet;
-    }
-
-    function renderUI() {
-      const notebookList = document.getElementById('notebook-list');
-      notebookList.innerHTML = '';
-
-      db.notebooks.forEach(nb => {
-        const isActive = nb.id === db.activeNotebookId;
-        const btn = document.createElement('button');
-        btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition flex items-center gap-2 ${
-          isActive ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80'
-        }`;
-        btn.onclick = () => selectNotebook(nb.id);
-        btn.innerHTML = `<span>${escapeHtml(nb.name)}</span><span onclick="deleteNotebook('${nb.id}', event)" class="hover:text-rose-200 opacity-70">✕</span>`;
-        notebookList.appendChild(btn);
-      });
-
-      const activeNb = db.notebooks.find(n => n.id === db.activeNotebookId);
-      const activeTitle = document.getElementById('active-notebook-title');
-      const docBadge = document.getElementById('doc-count-badge');
-      const docList = document.getElementById('document-list');
-      docList.innerHTML = '';
-
-      if (activeNb) {
-        activeTitle.innerText = activeNb.name;
-        const activeDocs = db.documents.filter(d => d.notebookId === activeNb.id);
-        docBadge.innerText = activeDocs.length;
-
-        if (activeDocs.length === 0) {
-          docList.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-6">Nenhum arquivo neste caderno.</p>';
-        } else {
-          activeDocs.forEach(doc => {
-            const item = document.createElement('div');
-            item.className = 'bg-slate-50 border border-slate-200/80 rounded-lg p-2 flex items-center justify-between text-xs hover:bg-slate-100/80 transition';
-            item.innerHTML = `
-              <div class="flex items-center gap-2 overflow-hidden">
-                <i class="${doc.type === 'pdf' ? 'fa-solid fa-file-pdf text-rose-500' : 'fa-solid fa-file-lines text-teal-600'}"></i>
-                <span class="font-semibold text-slate-700 truncate">${escapeHtml(doc.name)}</span>
-              </div>
-              <button onclick="deleteDocument('${doc.id}')" class="text-slate-400 hover:text-rose-600 px-1 text-xs">✕</button>
-            `;
-            docList.appendChild(item);
-          });
-        }
-      } else {
-        activeTitle.innerText = 'Sem Caderno';
-        docBadge.innerText = '0';
-      }
-    }
-
-    function appendUserMessage(text) {
-      const history = document.getElementById('chat-history');
-      const div = document.createElement('div');
-      div.className = 'flex justify-end';
-      div.innerHTML = `<div class="bg-slate-900 text-white rounded-2xl rounded-tr-none px-4 py-2.5 text-xs font-medium max-w-[80%] shadow-sm">${escapeHtml(text)}</div>`;
-      history.appendChild(div);
-      history.scrollTop = history.scrollHeight;
-    }
-
-    function appendSystemResult(data) {
-      const history = document.getElementById('chat-history');
-      const div = document.createElement('div');
-      div.className = 'flex justify-start';
-
-      if (data.type === 'exact') {
-        div.innerHTML = `
-          <div class="bg-white border border-emerald-200 rounded-2xl rounded-tl-none p-4 text-xs max-w-[90%] shadow-sm space-y-2">
-            <div class="flex items-center gap-1.5 text-emerald-700 font-bold">
-              <i class="fa-solid fa-circle-check"></i>
-              <span>Trecho Direto Localizado</span>
+      if (matches.length > 0) {
+        const topMatch = matches[0];
+        resultsArea.innerHTML = `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide">📍 Trecho Localizado</span>
+              <span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-medium">${topMatch.fileName} — Pág. ${topMatch.page}</span>
             </div>
-            <p class="text-slate-700 leading-relaxed font-medium bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/60 italic">"${escapeHtml(data.excerpt)}"</p>
-            <div class="flex items-center justify-between pt-1 text-[11px]">
-              <span class="text-slate-500 font-semibold">📌 Arquivo: <strong>${escapeHtml(data.docName)}</strong> (Pág. ${data.pageNum})</span>
-              <button onclick="openPageModal('${escapeHtml(data.docName)}', ${data.pageNum}, \`${escapeJsString(data.fullText)}\`)" class="text-brand-600 hover:underline font-bold">Ver Página Completa →</button>
-            </div>
-          </div>
-        `;
-      } else if (data.type === 'hint') {
-        div.innerHTML = `
-          <div class="bg-white border border-amber-200 rounded-2xl rounded-tl-none p-4 text-xs max-w-[90%] shadow-sm space-y-2">
-            <div class="text-amber-800 font-bold flex items-center gap-1.5">
-              <i class="fa-solid fa-lightbulb text-amber-500"></i>
-              <span>Informação Relacionada Sugerida</span>
-            </div>
-            <p class="text-slate-500">Não encontramos resposta exata, mas confira a <strong>página ${data.pageNum}</strong> do arquivo <strong>${escapeHtml(data.docName)}</strong>:</p>
-            <p class="text-slate-700 leading-relaxed bg-amber-50/50 p-3 rounded-xl border border-amber-100/60 italic">"${escapeHtml(data.excerpt)}"</p>
-            <div class="flex justify-end pt-1">
-              <button onclick="openPageModal('${escapeHtml(data.docName)}', ${data.pageNum}, \`${escapeJsString(data.fullText)}\`)" class="text-brand-600 hover:underline font-bold text-[11px]">Abrir Texto da Página →</button>
-            </div>
+            <p class="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100 font-mono text-xs">
+              "${topMatch.text.slice(0, 450)}..."
+            </p>
           </div>
         `;
       } else {
-        div.innerHTML = `<div class="bg-white border border-slate-200 rounded-2xl rounded-tl-none p-4 text-xs max-w-[80%] text-slate-500 shadow-sm">Nenhuma referência encontrada nos arquivos deste caderno.</div>`;
+        resultsArea.innerHTML = `
+          <div class="bg-amber-50 p-5 rounded-2xl border border-amber-200 text-amber-900 space-y-2">
+            <h3 class="font-bold text-xs uppercase tracking-wide text-amber-800">💡 Dica de Localização</h3>
+            <p class="text-xs leading-relaxed">
+              Não encontrei a resposta exata para a expressão digitada nos materiais de <strong>${currentNotebook}</strong>. Tente buscar por palavras-chave individuais do conceito.
+            </p>
+          </div>
+        `;
       }
-
-      history.appendChild(div);
-      history.scrollTop = history.scrollHeight;
     }
 
-    function openPageModal(title, pageNum, fullText) {
-      document.getElementById('modal-source-title').innerText = `${title} • Página ${pageNum}`;
-      document.getElementById('modal-source-content').innerText = fullText;
-      document.getElementById('page-modal').classList.remove('hidden');
-      document.getElementById('page-modal').classList.add('flex');
-    }
-
-    function closePageModal() {
-      document.getElementById('page-modal').classList.add('hidden');
-      document.getElementById('page-modal').classList.remove('flex');
-    }
-
-    function openNoteModal() { document.getElementById('note-modal').classList.remove('hidden'); document.getElementById('note-modal').classList.add('flex'); }
-    function closeNoteModal() { document.getElementById('note-modal').classList.add('hidden'); document.getElementById('note-modal').classList.remove('flex'); }
-
-    function toggleScratchpad() {
-      const panel = document.getElementById('scratchpad-panel');
-      panel.classList.toggle('hidden');
-      panel.classList.toggle('flex');
-    }
-
-    function updateScratchpadCounter() {
-      const val = document.getElementById('scratchpad-text').value;
-      document.getElementById('scratchpad-counter').innerText = `${val.length} caracteres`;
-    }
-
-    function copyScratchpad() {
-      const val = document.getElementById('scratchpad-text').value;
-      if (!val) return;
-      const temp = document.createElement('textarea');
-      temp.value = val;
-      document.body.appendChild(temp);
-      temp.select();
-      document.execCommand('copy');
-      document.body.removeChild(temp);
-      alert('Rascunho copiado!');
-    }
-     function clearChat() { document.getElementById('chat-history').innerHTML = ''; }
-
-    function exportWorkspace() {
-      const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `caderno_mente_backup_${new Date().toISOString().slice(0,10)}.json`;
-      a.click();
-    }
-
-    function importWorkspace(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        try {
-          db = JSON.parse(evt.target.result);
-          saveToStorage();
-          renderUI();
-          alert('Backup restaurado com sucesso!');
-        } catch (err) { alert('Arquivo de backup inválido.'); }
-      };
-      reader.readAsText(file);
-    }
-    function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
-    function escapeJsString(str) { return str ? str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$') : ''; }
+    renderNotebooks();
+    renderFiles();
   </script>
 </body>
 </html>
