@@ -47,7 +47,10 @@
       </div>
       <div>
         <h1 class="font-bold text-slate-800 leading-tight">Caderno Mente</h1>
-        <span class="text-[10px] uppercase tracking-wider font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Offline Ready</span>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] uppercase tracking-wider font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Offline Ready</span>
+          <span id="aiStatusBadge" class="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Síntese Local Ativa</span>
+        </div>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -69,9 +72,7 @@
           <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cadernos</h2>
           <button id="newNotebookBtn" class="text-xs font-semibold text-emerald-700 hover:underline">+ Criar</button>
         </div>
-        <div id="notebooksList" class="space-y-1">
-          <!-- Lista de cadernos renderizada via JS -->
-        </div>
+        <div id="notebooksList" class="space-y-1"></div>
       </div>
 
       <!-- Seção de Upload de Materiais -->
@@ -83,9 +84,7 @@
           <span class="text-xs font-semibold text-slate-600 block">Clique para enviar arquivos</span>
           <span class="text-[10px] text-slate-400 block mt-0.5">Suporta PDF e Bloco de Notas (TXT)</span>
         </label>
-        <div id="filesList" class="space-y-1.5 pt-1 max-h-48 overflow-y-auto">
-          <!-- Lista de arquivos do caderno ativo -->
-        </div>
+        <div id="filesList" class="space-y-1.5 pt-1 max-h-48 overflow-y-auto"></div>
       </div>
 
     </aside>
@@ -96,13 +95,13 @@
       <!-- Caixa de Pergunta -->
       <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div>
-          <h2 class="text-lg font-bold text-slate-800">Consulta ao Caderno</h2>
-          <p class="text-xs text-slate-500">Digite a questão da prova ou conceito para encontrar o trecho exato nos seus PDFs.</p>
+          <h2 class="text-lg font-bold text-slate-800">Pergunte ao seu Material</h2>
+          <p class="text-xs text-slate-500">Faça uma pergunta dissertativa ou peça para explicar um conceito com base nos seus PDFs.</p>
         </div>
         <div class="flex gap-2">
-          <input type="text" id="searchInput" placeholder="Ex: Qual é a via alternativa do complemento?" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition" />
+          <input type="text" id="searchInput" placeholder="Ex: Explique como funciona a via alternativa do complemento..." class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition" />
           <button id="searchBtn" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-6 py-3 rounded-xl shadow-sm text-sm transition">
-            Pesquisar
+            Responder
           </button>
         </div>
       </div>
@@ -110,8 +109,8 @@
       <!-- Área de Resultados -->
       <div id="resultsArea" class="space-y-4">
         <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-400">
-          <span class="text-3xl block mb-2">🔍</span>
-          <p class="text-sm">Selecione um caderno, envie seus PDFs e faça sua primeira busca.</p>
+          <span class="text-3xl block mb-2">💡</span>
+          <p class="text-sm">Envie os arquivos da matéria e faça sua pergunta para gerar uma explicação estruturada.</p>
         </div>
       </div>
 
@@ -126,6 +125,25 @@
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
       });
     }
+
+    // Verifica suporte à IA Nativa Offline do Chrome (Prompt API / Gemini Nano)
+    let hasBuiltInAI = false;
+    async function checkLocalAI() {
+      try {
+        if (window.ai && window.ai.languageModel) {
+          const capabilities = await window.ai.languageModel.capabilities();
+          if (capabilities.available !== 'no') {
+            hasBuiltInAI = true;
+            const badge = document.getElementById('aiStatusBadge');
+            badge.textContent = '✨ IA Local do Tablet Ativa';
+            badge.className = 'text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200';
+          }
+        }
+      } catch (e) {
+        console.log('Usando motor de síntese estruturada offline.');
+      }
+    }
+    checkLocalAI();
 
     // Gerenciador de Instalação PWA
     let deferredPrompt;
@@ -144,9 +162,7 @@
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          welcomeScreen.classList.add('hidden');
-        }
+        if (outcome === 'accepted') welcomeScreen.classList.add('hidden');
         deferredPrompt = null;
       } else {
         alert("Para instalar na tela inicial do tablet:\n\n1. Toque nos 3 pontinhos (⋮) do Chrome.\n2. Selecione 'Adicionar à tela inicial' ou 'Instalar aplicativo'.");
@@ -157,7 +173,7 @@
     topInstallBtn.addEventListener('click', triggerInstall);
     enterAppBtn.addEventListener('click', () => welcomeScreen.classList.add('hidden'));
 
-    // Lógica Básica de Armazenamento e Leitura
+    // Armazenamento Local
     let currentNotebook = 'Imunologia';
     let notebooks = JSON.parse(localStorage.getItem('caderno_mente_data') || '{"Imunologia": []}');
 
@@ -209,7 +225,7 @@
       saveState();
     }
 
-    // Leitura e Busca de PDFs
+    // Leitura de PDFs e TXTs
     document.getElementById('fileInput').addEventListener('change', async (e) => {
       const loadedFiles = Array.from(e.target.files);
       for (const file of loadedFiles) {
@@ -232,14 +248,99 @@
       saveState();
     });
 
-    // Mecanismo de Busca Estrita com Dica de Página
+    // Normalização e Stopwords
+    const stopWords = new Set(['como', 'qual', 'quais', 'para', 'pelo', 'pela', 'sobre', 'entre', 'isso', 'essa', 'esse', 'explique', 'funciona', 'sao', 'são', 'uma', 'uns', 'umas', 'dos', 'das', 'nos', 'nas', 'que', 'por', 'com']);
+
+    function normalizeText(str) {
+      return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function extractKeywords(query) {
+      return normalizeText(query)
+        .replace(/[^\w\s]/g, '')
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !stopWords.has(w));
+    }
+
+    // Sintetizador Inteligente Offline (Extrai e organiza frases-chave como resposta didática)
+    function synthesizeStructuredAnswer(query, topMatches, keywords) {
+      let relevantSentences = [];
+
+      topMatches.slice(0, 3).forEach(match => {
+        // Divide o texto da página em sentenças limpas
+        const sentences = match.text
+          .replace(/\s+/g, ' ')
+          .split(/(?<=[.!?])\s+/);
+
+        sentences.forEach(sentence => {
+          const clean = sentence.trim();
+          if (clean.length < 25 || clean.length > 450) return;
+
+          const normSentence = normalizeText(clean);
+          let hits = 0;
+          keywords.forEach(kw => {
+            if (normSentence.includes(kw)) hits++;
+          });
+
+          if (hits > 0) {
+            relevantSentences.push({
+              text: clean,
+              hits,
+              source: `${match.fileName} (Pág. ${match.page})`
+            });
+          }
+        });
+      });
+
+      // Ordena pelas sentenças que mais respondem diretamente aos termos da pergunta
+      relevantSentences.sort((a, b) => b.hits - a.hits);
+
+      // Remove duplicatas muito parecidas
+      const uniqueSentences = [];
+      relevantSentences.forEach(item => {
+        const isDuplicate = uniqueSentences.some(u => u.text.slice(0, 40) === item.text.slice(0, 40));
+        if (!isDuplicate && uniqueSentences.length < 4) {
+          uniqueSentences.push(item);
+        }
+      });
+
+      if (uniqueSentences.length === 0) {
+        return `<p class="text-sm text-slate-700 leading-relaxed">Com base no material <strong>${topMatches[0].fileName} (Pág. ${topMatches[0].page})</strong>, o tema aparece inserido no seguinte contexto: "${topMatches[0].text.slice(0, 320)}..."</p>`;
+      }
+
+      const mainPoint = uniqueSentences[0];
+      const supportingPoints = uniqueSentences.slice(1);
+
+      let html = `
+        <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
+          <p class="bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-100 text-slate-800">
+            <strong>Em resumo:</strong> ${mainPoint.text}
+          </p>
+      `;
+
+      if (supportingPoints.length > 0) {
+        html += `
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Detalhes complementares encontrados no material:</p>
+            <ul class="list-disc pl-5 space-y-1.5 text-slate-700">
+              ${supportingPoints.map(p => `<li>${p.text} <span class="text-[11px] text-slate-400 font-medium">[${p.source}]</span></li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    // Execução da Consulta
     document.getElementById('searchBtn').onclick = performSearch;
     document.getElementById('searchInput').onkeypress = (e) => { if (e.key === 'Enter') performSearch(); };
 
-    function performSearch() {
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    async function performSearch() {
+      const rawQuery = document.getElementById('searchInput').value.trim();
       const resultsArea = document.getElementById('resultsArea');
-      if (!query) return;
+      if (!rawQuery) return;
 
       const files = notebooks[currentNotebook] || [];
       if (files.length === 0) {
@@ -247,14 +348,23 @@
         return;
       }
 
-      const terms = query.split(' ').filter(t => t.length > 2);
+      resultsArea.innerHTML = `
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500 text-xs animate-pulse">
+          Analisando os materiais de <strong>${currentNotebook}</strong> e formulando resposta...
+        </div>
+      `;
+
+      const keywords = extractKeywords(rawQuery);
+      const searchTerms = keywords.length > 0 ? keywords : [normalizeText(rawQuery)];
       let matches = [];
 
       files.forEach(file => {
         file.pages.forEach(p => {
-          const textLower = p.text.toLowerCase();
+          const normPage = normalizeText(p.text);
           let score = 0;
-          terms.forEach(t => { if (textLower.includes(t)) score++; });
+          searchTerms.forEach(t => {
+            if (normPage.includes(t)) score += 2;
+          });
           if (score > 0) {
             matches.push({ fileName: file.name, page: p.page, text: p.text, score });
           }
@@ -263,29 +373,61 @@
 
       matches.sort((a, b) => b.score - a.score);
 
-      if (matches.length > 0) {
-        const topMatch = matches[0];
-        resultsArea.innerHTML = `
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-              <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide">📍 Trecho Localizado</span>
-              <span class="text-[11px] bg-slate-100 px-2 py-0.5 rounded text-slate-600 font-medium">${topMatch.fileName} — Pág. ${topMatch.page}</span>
-            </div>
-            <p class="text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100 font-mono text-xs">
-              "${topMatch.text.slice(0, 450)}..."
-            </p>
-          </div>
-        `;
-      } else {
+      if (matches.length === 0) {
         resultsArea.innerHTML = `
           <div class="bg-amber-50 p-5 rounded-2xl border border-amber-200 text-amber-900 space-y-2">
             <h3 class="font-bold text-xs uppercase tracking-wide text-amber-800">💡 Dica de Localização</h3>
             <p class="text-xs leading-relaxed">
-              Não encontrei a resposta exata para a expressão digitada nos materiais de <strong>${currentNotebook}</strong>. Tente buscar por palavras-chave individuais do conceito.
+              Não encontrei exatamente os termos da sua pergunta nos materiais de <strong>${currentNotebook}</strong>. Tente reformular usando apenas o nome do conceito principal (ex: em vez de uma frase longa, digite o nome da estrutura ou processo).
             </p>
           </div>
         `;
+        return;
       }
+
+      const topMatch = matches[0];
+      let formulatedAnswerHTML = '';
+
+      // Se o tablet tiver Gemini Nano / Chrome AI ativo offline, usa para redigir a resposta
+      if (hasBuiltInAI) {
+        try {
+          const contextText = matches.slice(0, 2).map(m => `[Arquivo: ${m.fileName}, Pág. ${m.page}]: ${m.text.slice(0, 1500)}`).join('\n\n');
+          const session = await window.ai.languageModel.create({
+            systemPrompt: "Você é um assistente de estudos. Responda à pergunta do aluno de forma clara, didática e direta para uma prova, usando EXCLUSIVAMENTE os trechos fornecidos. Não invente informações externas."
+          });
+          const aiResponse = await session.prompt(`Trechos do material:\n${contextText}\n\nPergunta: ${rawQuery}`);
+          formulatedAnswerHTML = `<div class="text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">${aiResponse}</div>`;
+        } catch (err) {
+          formulatedAnswerHTML = synthesizeStructuredAnswer(rawQuery, matches, searchTerms);
+        }
+      } else {
+        // Fallback 100% garantido offline: Síntese estruturada das frases-chave
+        formulatedAnswerHTML = synthesizeStructuredAnswer(rawQuery, matches, searchTerms);
+      }
+
+      resultsArea.innerHTML = `
+        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
+              <span>✨</span> Resposta Formulada
+            </span>
+            <span class="text-[11px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-medium">
+              Fonte principal: ${topMatch.fileName} — Pág. ${topMatch.page}
+            </span>
+          </div>
+
+          ${formulatedAnswerHTML}
+
+          <details class="pt-2 border-t border-slate-100">
+            <summary class="text-xs font-semibold text-slate-500 cursor-pointer hover:text-emerald-700 select-none">
+              📄 Ver texto original completo da página (${topMatch.fileName} - Pág. ${topMatch.page})
+            </summary>
+            <p class="mt-2 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100 font-mono">
+              ${topMatch.text}
+            </p>
+          </details>
+        </div>
+      `;
     }
 
     renderNotebooks();
