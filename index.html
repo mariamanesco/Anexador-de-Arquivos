@@ -214,6 +214,11 @@
 
     // Modos: 'question' ou 'statement'
     let currentMode = 'question';
+    let lastMatches = [];
+    let lastKeywordObjs = [];
+    let lastRawQuery = '';
+    let activeMatchIndex = 0;
+
     const modeQuestionBtn = document.getElementById('modeQuestionBtn');
     const modeStatementBtn = document.getElementById('modeStatementBtn');
     const boxTitle = document.getElementById('boxTitle');
@@ -235,7 +240,7 @@
         modeQuestionBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-800 transition';
         boxTitle.textContent = 'Conferir Alternativa / V ou F';
         boxSubtitle.textContent = 'Cole a alternativa para checar palavras de negação/restrição e ver os trechos do slide/PDF que tratam do tema.';
-        searchInput.placeholder = 'Ex: Uma pessoa com artrite reumatoide não tem possibilidade de ter outras doenças autoimunes.';
+        searchInput.placeholder = 'Ex: Uma pessoa com uma doença autoimune não tem probabilidade de possuir outra doença autoimune.';
         searchBtn.textContent = 'Conferir no Material';
       }
       if (shouldReRun && searchInput.value.trim()) {
@@ -539,7 +544,6 @@
             }
           });
 
-          // Pontua cada frase pela quantidade de palavras-chave presentes na MESMA frase
           const rankedSentences = sentences.map((s, idx) => {
             const sNorm = normalizeText(s);
             let sScore = 0;
@@ -556,7 +560,6 @@
             return { text: s.trim(), idx, sScore, sDistinct };
           }).sort((a, b) => b.sScore - a.sScore);
 
-          // Bônus forte para páginas com frases que concentram vários termos juntos
           pageScore += bestSentenceHits * 10;
           if (pageDistinctMatches > 1) pageScore += pageDistinctMatches * 4;
 
@@ -579,20 +582,26 @@
       return scoredPages;
     }
 
-    // Resposta para PERGUNTA: monta bloco coeso com as frases mais alinhadas ao foco
-    function renderQuestionView(rawQuery, matches, keywordObjs) {
+    function isOffTopicGenetics(sNorm, askedGenetics) {
+      return !askedGenetics && /\bgen[eé]tic[aos]?\b|\bgene\b|\bgenes\b|\bhereditari[oa]s?\b|\bdesordens geneticas\b/.test(sNorm);
+    }
+
+    // Resposta para PERGUNTA
+    function renderQuestionView(rawQuery, matches, keywordObjs, idx) {
       const normQuery = normalizeText(rawQuery);
       const askedCause = /\bcausa\b|\bcausas\b|\bpor que\b|\bporque\b|\betiologia\b/.test(normQuery);
       const askedFactor = /\bfator\b|\bfatores\b|\breumatoide\b/.test(normQuery);
+      const askedGenetics = /\bgen[eé]tic[aos]?\b|\bgene\b|\bgenes\b|\bhereditari[oa]s?\b/.test(normQuery);
       const specificKeywords = keywordObjs.filter(k => k.weight > 1);
 
-      const best = matches[0];
+      const best = matches[idx] || matches[0];
       const candidates = best.rankedSentences.filter(s => {
         if (s.sScore <= 0 || s.text.endsWith('?')) return false;
         const sNorm = normalizeText(s.text);
         if (specificKeywords.length > 0 && !specificKeywords.some(k => textHasKeyword(sNorm, k).found)) return false;
         if (!askedCause && /\bcausa\b|\bcausas\b|\betiologia\b|\bnao e completamente compreendida\b/.test(sNorm)) return false;
         if (!askedFactor && /\bfator reumatoide\b/.test(sNorm) && s.sDistinct <= 1) return false;
+        if (isOffTopicGenetics(sNorm, askedGenetics) && s.sDistinct <= 1) return false;
         return true;
       });
 
@@ -601,13 +610,15 @@
 
       if (candidates.length > 0) {
         const topSent = candidates[0];
-        // Tenta incluir a frase imediatamente adjacente se ela fizer parte da mesma ideia
         const allSents = best.text.split(/(?<=[.!?])\s+/);
         const nextSent = allSents[topSent.idx + 1];
         mainExcerpt = topSent.text;
         if (nextSent && nextSent.trim().length >= 20 && nextSent.trim().length <= 280 && !nextSent.trim().endsWith('?')) {
           const nextNorm = normalizeText(nextSent);
-          const nextOffTopic = (!askedCause && /\bcausa\b|\betiologia\b/.test(nextNorm)) || (!askedFactor && /\bfator reumatoide\b/.test(nextNorm));
+          const nextOffTopic =
+            (!askedCause && /\bcausa\b|\betiologia\b/.test(nextNorm)) ||
+            (!askedFactor && /\bfator reumatoide\b/.test(nextNorm)) ||
+            (isOffTopicGenetics(nextNorm, askedGenetics) && !specificKeywords.some(k => textHasKeyword(nextNorm, k).found));
           if (!nextOffTopic) {
             mainExcerpt += ' ' + nextSent.trim();
           }
@@ -620,8 +631,6 @@
       } else {
         mainExcerpt = best.text.slice(0, 380) + '...';
       }
-
-      const otherSources = matches.slice(1, 3).filter(m => m.fileName !== best.fileName || m.page !== best.page);
 
       let html = `
         <div class="space-y-4 text-sm text-slate-800 leading-relaxed">
@@ -642,31 +651,27 @@
         `;
       }
 
-      if (otherSources.length > 0) {
-        html += `
-          <div class="pt-2 border-t border-slate-100">
-            <p class="text-[11px] font-semibold text-slate-500">📚 Outras páginas/arquivos que também citam os termos:</p>
-            <div class="flex flex-wrap gap-2 mt-1.5">
-              ${otherSources.map(s => `<span class="text-[11px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">${s.fileName} (Pág. ${s.page})</span>`).join('')}
-            </div>
-          </div>
-        `;
-      }
-
       html += `</div>`;
       return html;
     }
 
-    // Conferência de ALTERNATIVA / V ou F: transparente e focada em ajudar você a checar na prova
+    // Conferência de ALTERNATIVA / V ou F
     const ALERT_WORDS = ['nao', 'nunca', 'jamais', 'ausencia', 'ausente', 'sempre', 'apenas', 'somente', 'exclusivamente', 'unico', 'unica', 'todos', 'todas', 'nenhum', 'nenhuma', 'impede', 'impedem', 'bloqueia', 'bloqueiam'];
 
-    function renderStatementView(rawStatement, matches, keywordObjs) {
+    function renderStatementView(rawStatement, matches, keywordObjs, idx) {
       const stmtNorm = normalizeText(rawStatement);
+      const askedGenetics = /\bgen[eé]tic[aos]?\b|\bgene\b|\bgenes\b|\bhereditari[oa]s?\b/.test(stmtNorm);
       const stmtTokens = stmtNorm.split(/[^a-z0-9]+/).filter(Boolean);
       const foundAlertWords = [...new Set(ALERT_WORDS.filter(w => stmtTokens.includes(w)))];
 
-      const best = matches[0];
-      const topSentences = best.rankedSentences.filter(s => s.sScore > 0).slice(0, 3);
+      const best = matches[idx] || matches[0];
+      const filteredSentences = best.rankedSentences.filter(s => {
+        if (s.sScore <= 0) return false;
+        const sNorm = normalizeText(s.text);
+        if (isOffTopicGenetics(sNorm, askedGenetics) && s.sDistinct <= 1) return false;
+        return true;
+      });
+      const topSentences = (filteredSentences.length > 0 ? filteredSentences : best.rankedSentences.filter(s => s.sScore > 0)).slice(0, 3);
       const missingSpecific = best.missingKeywords.filter(k => k.weight > 1);
 
       return `
@@ -708,6 +713,76 @@
       `;
     }
 
+    function renderActiveResult() {
+      const resultsArea = document.getElementById('resultsArea');
+      if (!lastMatches.length) return;
+      const topMatch = lastMatches[activeMatchIndex] || lastMatches[0];
+      const bodyHTML = currentMode === 'question'
+        ? renderQuestionView(lastRawQuery, lastMatches, lastKeywordObjs, activeMatchIndex)
+        : renderStatementView(lastRawQuery, lastMatches, lastKeywordObjs, activeMatchIndex);
+
+      const oppositeMode = currentMode === 'question' ? 'statement' : 'question';
+      const oppositeLabel = currentMode === 'question' ? 'Conferir como Alternativa' : 'Ver como Pergunta';
+
+      const altSources = lastMatches.slice(0, 4);
+      const sourceSwitcherHTML = altSources.length > 1
+        ? `<div class="pt-2 border-t border-slate-100">
+             <p class="text-[11px] font-semibold text-slate-500 mb-1.5">📑 Outros trechos/slides encontrados (toque para alternar):</p>
+             <div class="flex flex-wrap gap-1.5">
+               ${altSources.map((m, i) => `
+                 <button type="button" onclick="selectMatch(${i})" class="text-[11px] px-2.5 py-1 rounded-lg border transition ${i === activeMatchIndex ? 'bg-emerald-700 text-white border-emerald-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-emerald-50'}">
+                   ${m.fileName} · Pág. ${m.page}
+                 </button>
+               `).join('')}
+             </div>
+           </div>`
+        : '';
+
+      resultsArea.innerHTML = `
+        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
+              <span>${currentMode === 'question' ? '📖' : '✅'}</span> ${currentMode === 'question' ? 'Trechos Localizados' : 'Conferência no Material'}
+            </span>
+            <span class="text-[11px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-medium">
+              Fonte: ${topMatch.fileName} — Pág. ${topMatch.page}
+            </span>
+          </div>
+
+          <div id="copyableAnswerText">
+            ${bodyHTML}
+          </div>
+
+          ${sourceSwitcherHTML}
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="copyCurrentResult()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                📋 Copiar trecho
+              </button>
+              <button type="button" onclick="switchModeAndSearch('${oppositeMode}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200 transition">
+                🔄 ${oppositeLabel}
+              </button>
+            </div>
+          </div>
+
+          <details class="pt-2 border-t border-slate-100">
+            <summary class="text-xs font-semibold text-slate-500 cursor-pointer hover:text-emerald-700 select-none">
+              📄 Ver texto original limpo da página (${topMatch.fileName} - Pág. ${topMatch.page})
+            </summary>
+            <p class="mt-2 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
+              ${highlightTerms(topMatch.text, lastKeywordObjs)}
+            </p>
+          </details>
+        </div>
+      `;
+    }
+
+    window.selectMatch = function(idx) {
+      activeMatchIndex = idx;
+      renderActiveResult();
+    };
+
     window.copyCurrentResult = function() {
       const target = document.getElementById('copyableAnswerText');
       if (!target) return;
@@ -727,11 +802,13 @@
 
     window.switchModeAndSearch = function(targetMode) {
       setMode(targetMode, false);
-      performSearch();
+      renderActiveResult();
     };
 
     document.getElementById('clearSearchBtn').onclick = () => {
       searchInput.value = '';
+      lastMatches = [];
+      activeMatchIndex = 0;
       searchInput.focus();
       document.getElementById('resultsArea').innerHTML = `
         <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-400">
@@ -797,50 +874,11 @@
         return;
       }
 
-      const topMatch = matches[0];
-      const bodyHTML = currentMode === 'question'
-        ? renderQuestionView(rawQuery, matches, keywordObjs)
-        : renderStatementView(rawQuery, matches, keywordObjs);
-
-      const oppositeMode = currentMode === 'question' ? 'statement' : 'question';
-      const oppositeLabel = currentMode === 'question' ? 'Conferir como Alternativa' : 'Ver como Pergunta';
-
-      resultsArea.innerHTML = `
-        <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-            <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
-              <span>${currentMode === 'question' ? '📖' : '✅'}</span> ${currentMode === 'question' ? 'Trechos Localizados' : 'Conferência no Material'}
-            </span>
-            <span class="text-[11px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-medium">
-              Fonte principal: ${topMatch.fileName} — Pág. ${topMatch.page}
-            </span>
-          </div>
-
-          <div id="copyableAnswerText">
-            ${bodyHTML}
-          </div>
-
-          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
-            <div class="flex flex-wrap items-center gap-2">
-              <button type="button" onclick="copyCurrentResult()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
-                📋 Copiar trecho
-              </button>
-              <button type="button" onclick="switchModeAndSearch('${oppositeMode}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200 transition">
-                🔄 ${oppositeLabel}
-              </button>
-            </div>
-          </div>
-
-          <details class="pt-2 border-t border-slate-100">
-            <summary class="text-xs font-semibold text-slate-500 cursor-pointer hover:text-emerald-700 select-none">
-              📄 Ver texto original limpo da página (${topMatch.fileName} - Pág. ${topMatch.page})
-            </summary>
-            <p class="mt-2 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-              ${highlightTerms(topMatch.text, keywordObjs)}
-            </p>
-          </details>
-        </div>
-      `;
+      lastRawQuery = rawQuery;
+      lastKeywordObjs = keywordObjs;
+      lastMatches = matches;
+      activeMatchIndex = 0;
+      renderActiveResult();
     }
 
     updateStorageMeter();
