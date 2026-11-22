@@ -26,7 +26,7 @@
         <p class="text-sm text-slate-500 mt-1">Assistente de Consulta 100% Offline</p>
       </div>
       <p class="text-xs text-slate-600 bg-emerald-50 p-3 rounded-xl border border-emerald-100 leading-relaxed text-left">
-        ✨ <strong>Dica para a Prova:</strong> Adicione o aplicativo à tela inicial para garantir abertura instantânea no Modo Avião, sem precisar do navegador!
+        ✨ <strong>Dica para a Prova:</strong> Adicione o aplicativo à tela inicial para garantir abertura rápida no Modo Avião, sem depender do navegador.
       </p>
       <div class="space-y-2 pt-2">
         <button id="installBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-3 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm">
@@ -49,7 +49,7 @@
         <h1 class="font-bold text-slate-800 leading-tight truncate">Caderno Mente</h1>
         <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
           <span id="connStatusBadge" class="text-[10px] uppercase tracking-wider font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Offline Ready</span>
-          <span id="aiStatusBadge" class="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Síntese + Checagem Local</span>
+          <span class="text-[10px] font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Consulta Local Direta</span>
         </div>
       </div>
     </div>
@@ -66,16 +66,16 @@
     <!-- Coluna Esquerda: Cadernos, Arquivos e Backup -->
     <aside class="md:col-span-4 lg:col-span-3 space-y-6">
       
-      <!-- Seção de Cadernos -->
+      <!-- Cadernos -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex justify-between items-center">
           <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cadernos</h2>
-          <button id="newNotebookBtn" class="text-xs font-semibold text-emerald-700 hover:underline">+ Criar</button>
+          <button id="newNotebookBtn" type="button" class="text-xs font-semibold text-emerald-700 hover:underline">+ Criar</button>
         </div>
         <div id="notebooksList" class="space-y-1"></div>
       </div>
 
-      <!-- Seção de Upload de Materiais -->
+      <!-- Upload -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Adicionar PDFs / Notas</h2>
         <label class="block w-full cursor-pointer bg-slate-50 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-4 text-center transition">
@@ -91,11 +91,11 @@
         <div id="filesList" class="space-y-1.5 pt-1 max-h-48 overflow-y-auto"></div>
       </div>
 
-      <!-- Backup / Segurança -->
+      <!-- Backup -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Segurança do Caderno</h2>
         <div class="grid grid-cols-2 gap-2">
-          <button id="exportBackupBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold py-2 px-2.5 rounded-xl transition">
+          <button id="exportBackupBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold py-2 px-2.5 rounded-xl transition">
             💾 Backup (.json)
           </button>
           <label class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold py-2 px-2.5 rounded-xl transition text-center cursor-pointer">
@@ -107,44 +107,44 @@
 
     </aside>
 
-    <!-- Coluna Direita: Consulta, Afirmação e Histórico -->
+    <!-- Coluna Direita: Consulta e Histórico -->
     <section class="md:col-span-8 lg:col-span-9 space-y-6">
       
-      <!-- Caixa de Consulta / Afirmação -->
+      <!-- Caixa de Entrada -->
       <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 id="boxTitle" class="text-lg font-bold text-slate-800">Pergunte ao seu Material</h2>
-            <p id="boxSubtitle" class="text-xs text-slate-500">Faça uma pergunta dissertativa ou peça para explicar um conceito com base nos seus PDFs.</p>
+            <h2 id="boxTitle" class="text-lg font-bold text-slate-800">Pergunta Dissertativa</h2>
+            <p id="boxSubtitle" class="text-xs text-slate-500">Escreva sua dúvida do seu jeito e veja os trechos mais diretos e coesos do material.</p>
           </div>
           <div class="inline-flex bg-slate-100 p-1 rounded-xl border border-slate-200">
             <button id="modeQuestionBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-emerald-800 shadow-sm transition">
               ❓ Pergunta
             </button>
             <button id="modeStatementBtn" type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-800 transition">
-              ✅ Conferir Afirmação
+              ✅ Conferir Alternativa
             </button>
           </div>
         </div>
 
         <div class="space-y-2.5">
-          <textarea id="searchInput" rows="2" placeholder="Ex: O que é autoimunidade e o que significa quando ela é sistêmica?" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition resize-y"></textarea>
+          <textarea id="searchInput" rows="2" placeholder="Ex: Uma pessoa com artrite reumatoide pode ter outras doenças autoimunes?" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 transition resize-y"></textarea>
           <div class="flex flex-wrap items-center justify-between gap-2">
             <button id="clearSearchBtn" type="button" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium px-3.5 py-2 rounded-xl text-xs transition">
               🧹 Limpar
             </button>
             <button id="searchBtn" type="button" class="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold px-6 py-2.5 rounded-xl shadow-sm text-sm transition">
-              Consultar Caderno
+              Buscar no Caderno
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Área de Resultados -->
+      <!-- Resultados -->
       <div id="resultsArea" class="space-y-4">
         <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-400">
-          <span class="text-3xl block mb-2">💡</span>
-          <p class="text-sm">Envie os arquivos da matéria, escolha <strong>Pergunta</strong> ou <strong>Conferir Afirmação</strong> e faça sua consulta.</p>
+          <span class="text-3xl block mb-2">📌</span>
+          <p class="text-sm">Escolha <strong>Pergunta</strong> ou <strong>Conferir Alternativa</strong>, digite ou cole o texto e localize os trechos do seu material com rapidez.</p>
         </div>
       </div>
 
@@ -162,14 +162,14 @@
   </main>
 
   <script>
-    // Registro do Service Worker
+    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
       });
     }
 
-    // Status de conexão visual
+    // Status de conexão
     function updateConnBadge() {
       const badge = document.getElementById('connStatusBadge');
       if (navigator.onLine) {
@@ -184,24 +184,7 @@
     window.addEventListener('offline', updateConnBadge);
     updateConnBadge();
 
-    // Verifica suporte à IA Nativa Offline do Chrome (Prompt API / Gemini Nano)
-    let hasBuiltInAI = false;
-    async function checkLocalAI() {
-      try {
-        if (window.ai && window.ai.languageModel) {
-          const capabilities = await window.ai.languageModel.capabilities();
-          if (capabilities.available !== 'no') {
-            hasBuiltInAI = true;
-            const badge = document.getElementById('aiStatusBadge');
-            badge.textContent = '✨ IA Local do Tablet Ativa';
-            badge.className = 'text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200';
-          }
-        }
-      } catch (e) {}
-    }
-    checkLocalAI();
-
-    // Gerenciador de Instalação PWA
+    // Instalação PWA
     let deferredPrompt;
     const welcomeScreen = document.getElementById('welcomeScreen');
     const installBtn = document.getElementById('installBtn');
@@ -229,7 +212,7 @@
     topInstallBtn.addEventListener('click', triggerInstall);
     enterAppBtn.addEventListener('click', () => welcomeScreen.classList.add('hidden'));
 
-    // Modo de consulta: 'question' ou 'statement'
+    // Modos: 'question' ou 'statement'
     let currentMode = 'question';
     const modeQuestionBtn = document.getElementById('modeQuestionBtn');
     const modeStatementBtn = document.getElementById('modeStatementBtn');
@@ -243,17 +226,17 @@
       if (mode === 'question') {
         modeQuestionBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-emerald-800 shadow-sm transition';
         modeStatementBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-800 transition';
-        boxTitle.textContent = 'Pergunte ao seu Material';
-        boxSubtitle.textContent = 'Faça uma pergunta dissertativa ou peça para explicar um conceito com base nos seus PDFs.';
-        searchInput.placeholder = 'Ex: O que é autoimunidade e o que significa quando ela é sistêmica?';
-        searchBtn.textContent = 'Responder';
+        boxTitle.textContent = 'Pergunta Dissertativa';
+        boxSubtitle.textContent = 'Escreva sua dúvida do seu jeito e veja os trechos mais diretos e coesos do material.';
+        searchInput.placeholder = 'Ex: Uma pessoa com artrite reumatoide pode ter outras doenças autoimunes?';
+        searchBtn.textContent = 'Buscar no Caderno';
       } else {
         modeStatementBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-emerald-800 shadow-sm transition';
         modeQuestionBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-800 transition';
-        boxTitle.textContent = 'Conferir Afirmação de Prova';
-        boxSubtitle.textContent = 'Cole uma alternativa ou afirmativa para checar coerência, negações, termos absolutos e possíveis oposições no material.';
-        searchInput.placeholder = 'Ex: Uma pessoa com artrite reumatoide não tem possibilidade de possuir outras doenças autoimunes.';
-        searchBtn.textContent = 'Conferir Afirmação';
+        boxTitle.textContent = 'Conferir Alternativa / V ou F';
+        boxSubtitle.textContent = 'Cole a alternativa para checar palavras de negação/restrição e ver os trechos do slide/PDF que tratam do tema.';
+        searchInput.placeholder = 'Ex: Uma pessoa com artrite reumatoide não tem possibilidade de ter outras doenças autoimunes.';
+        searchBtn.textContent = 'Conferir no Material';
       }
       if (shouldReRun && searchInput.value.trim()) {
         performSearch();
@@ -263,7 +246,7 @@
     modeQuestionBtn.addEventListener('click', () => setMode('question', true));
     modeStatementBtn.addEventListener('click', () => setMode('statement', true));
 
-    // Armazenamento Local + Controle de Espaço
+    // Dados e Armazenamento
     let currentNotebook = 'Imunologia';
     let notebooks = {};
     let searchHistory = [];
@@ -306,7 +289,7 @@
         renderNotebooks();
         renderFiles();
       } catch (e) {
-        alert('O armazenamento local do navegador atingiu o limite de espaço para novos arquivos. Faça um Backup (.json) ou remova algum PDF grande para liberar espaço.');
+        alert('O armazenamento local atingiu o limite. Faça um Backup (.json) ou exclua algum PDF grande para liberar espaço.');
       }
     }
 
@@ -434,7 +417,7 @@
       e.target.value = '';
     });
 
-    // Limpeza cuidadosa de texto extraído de PDF (evita quebras de linha ruins sem colar palavras erradas)
+    // Limpeza de texto extraído de PDF
     function cleanPdfText(raw) {
       return raw
         .replace(/([a-zA-ZÀ-ÿ]{2,})-\s+([a-zA-ZÀ-ÿ]{2,})/g, '$1$2')
@@ -467,8 +450,8 @@
       saveState();
     });
 
-    // Normalização, Stopwords, Distância de Edição e Pares Opostos
-    const stopWords = new Set(['como', 'qual', 'quais', 'para', 'pelo', 'pela', 'sobre', 'entre', 'isso', 'essa', 'esse', 'explique', 'funciona', 'sao', 'são', 'uma', 'uns', 'umas', 'dos', 'das', 'nos', 'nas', 'que', 'por', 'com', 'quando', 'ela', 'ele', 'significa', 'onde', 'porque', 'afirmacao', 'afirmação', 'alternativa', 'correta', 'incorreta', 'pessoa', 'possui', 'ter', 'tem', 'outras', 'outro', 'outra', 'possibilidade', 'probabilidade', 'maior', 'menor']);
+    // Normalização, Stopwords e Distância de Edição (palavras >= 5 letras)
+    const stopWords = new Set(['como', 'qual', 'quais', 'para', 'pelo', 'pela', 'sobre', 'entre', 'isso', 'essa', 'esse', 'explique', 'funciona', 'sao', 'são', 'uma', 'uns', 'umas', 'dos', 'das', 'nos', 'nas', 'que', 'por', 'com', 'quando', 'ela', 'ele', 'significa', 'onde', 'porque', 'afirmacao', 'afirmação', 'alternativa', 'correta', 'incorreta', 'pessoa', 'possui', 'ter', 'tem', 'outras', 'outro', 'outra', 'possibilidade', 'probabilidade', 'maior', 'menor', 'pode', 'podem', 'fazer', 'sobre', 'esse', 'essa']);
 
     function normalizeText(str) {
       return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -519,32 +502,6 @@
       }));
     }
 
-    const OPPOSITE_PAIRS = [
-      [['aumenta', 'aumentam', 'eleva', 'elevam', 'incrementa', 'maior', 'mais'], ['diminui', 'diminuem', 'reduz', 'reduzem', 'cai', 'caem', 'baixa', 'menor', 'menos']],
-      [['ativa', 'ativam', 'estimula', 'estimulam', 'promove', 'promovem', 'induz', 'induzem'], ['inibe', 'inibem', 'suprime', 'suprimem', 'bloqueia', 'bloqueiam', 'impede', 'impedem']],
-      [['produz', 'produzem', 'secreta', 'secretam', 'libera', 'liberam', 'sintetiza'], ['consome', 'consomem', 'degrada', 'degradam', 'destroi', 'destroem']],
-      [['aguda', 'agudo', 'rapida', 'rapido'], ['cronica', 'cronico', 'lenta', 'lento', 'prolongada']],
-      [['local', 'localizada', 'restrita', 'restrito'], ['sistemica', 'sistemico', 'generalizada', 'multissistemica']],
-      [['previne', 'protege', 'protegem'], ['causa', 'causam', 'desencadeia', 'agrava', 'agravam']]
-    ];
-
-    const NEGATION_WORDS = ['nao', 'nunca', 'jamais', 'ausencia', 'ausente', 'impede', 'impedem', 'bloqueia', 'inibe', 'falta'];
-    const ABSOLUTE_WORDS = ['sempre', 'apenas', 'somente', 'exclusivamente', 'unico', 'unica', 'todos', 'todas', 'todo', 'toda', 'nenhum', 'nenhuma'];
-
-    function detectMarkers(normText) {
-      const tokens = new Set(normText.split(/[^a-z0-9]+/).filter(Boolean));
-      const negations = NEGATION_WORDS.filter(w => tokens.has(w));
-      const absolutes = ABSOLUTE_WORDS.filter(w => tokens.has(w));
-      const polarities = [];
-      OPPOSITE_PAIRS.forEach(([groupA, groupB], pairIdx) => {
-        const hasA = groupA.some(term => normText.includes(term));
-        const hasB = groupB.some(term => normText.includes(term));
-        if (hasA && !hasB) polarities.push({ pairIdx, side: 'A', sample: groupA.find(term => normText.includes(term)) });
-        if (hasB && !hasA) polarities.push({ pairIdx, side: 'B', sample: groupB.find(term => normText.includes(term)) });
-      });
-      return { negations, absolutes, polarities };
-    }
-
     function highlightTerms(text, keywordObjs) {
       let highlighted = text;
       keywordObjs.forEach(kw => {
@@ -556,145 +513,139 @@
       return highlighted;
     }
 
-    function searchInFiles(files, keywordObjs) {
-      let matches = [];
+    // Busca priorizando frases que unem os conceitos-chave na mesma sentença
+    function findBestMatches(files, keywordObjs) {
+      let scoredPages = [];
+
       files.forEach(file => {
         file.pages.forEach(p => {
           const cleanText = cleanPdfText(p.text);
-          const normPage = normalizeText(cleanText);
-          let score = 0;
-          let distinctMatches = 0;
+          const sentences = cleanText.split(/(?<=[.!?])\s+/).filter(s => s.trim().length >= 20);
+
+          let pageScore = 0;
+          let pageDistinctMatches = 0;
           let matchedKeywords = [];
           let missingKeywords = [];
+          let bestSentenceHits = 0;
 
           keywordObjs.forEach(kw => {
-            const res = textHasKeyword(normPage, kw);
+            const res = textHasKeyword(normalizeText(cleanText), kw);
             if (res.found) {
-              score += res.fuzzy ? kw.weight * 2 : kw.weight * 3;
-              distinctMatches++;
-              matchedKeywords.push({ ...kw, fuzzy: res.fuzzy });
+              pageScore += res.fuzzy ? kw.weight * 1.5 : kw.weight * 2;
+              pageDistinctMatches++;
+              matchedKeywords.push(kw);
             } else {
               missingKeywords.push(kw);
             }
           });
 
-          if (distinctMatches > 1) {
-            score += distinctMatches * 5;
-          }
+          // Pontua cada frase pela quantidade de palavras-chave presentes na MESMA frase
+          const rankedSentences = sentences.map((s, idx) => {
+            const sNorm = normalizeText(s);
+            let sScore = 0;
+            let sDistinct = 0;
+            keywordObjs.forEach(kw => {
+              const r = textHasKeyword(sNorm, kw);
+              if (r.found) {
+                sScore += r.fuzzy ? kw.weight * 3 : kw.weight * 5;
+                sDistinct++;
+              }
+            });
+            if (sDistinct > 1) sScore += sDistinct * 8;
+            if (sDistinct > bestSentenceHits) bestSentenceHits = sDistinct;
+            return { text: s.trim(), idx, sScore, sDistinct };
+          }).sort((a, b) => b.sScore - a.sScore);
 
-          if (score > 0) {
-            matches.push({
+          // Bônus forte para páginas com frases que concentram vários termos juntos
+          pageScore += bestSentenceHits * 10;
+          if (pageDistinctMatches > 1) pageScore += pageDistinctMatches * 4;
+
+          if (pageScore > 0) {
+            scoredPages.push({
               fileName: file.name,
               page: p.page,
               text: cleanText,
-              score,
-              distinctMatches,
+              score: pageScore,
+              distinctMatches: pageDistinctMatches,
               matchedKeywords,
-              missingKeywords
+              missingKeywords,
+              rankedSentences
             });
           }
         });
       });
-      matches.sort((a, b) => b.score - a.score);
-      return matches;
+
+      scoredPages.sort((a, b) => b.score - a.score);
+      return scoredPages;
     }
 
-    // Resposta coesa para PERGUNTA: filtra frases alinhadas ao foco da pergunta e evita desvios
-    function synthesizeQuestionAnswer(rawQuery, topMatches, keywordObjs) {
+    // Resposta para PERGUNTA: monta bloco coeso com as frases mais alinhadas ao foco
+    function renderQuestionView(rawQuery, matches, keywordObjs) {
       const normQuery = normalizeText(rawQuery);
       const askedCause = /\bcausa\b|\bcausas\b|\bpor que\b|\bporque\b|\betiologia\b/.test(normQuery);
       const askedFactor = /\bfator\b|\bfatores\b|\breumatoide\b/.test(normQuery);
-
-      const bestPage = topMatches[0];
-      const cleanedPageText = cleanPdfText(bestPage.text);
-      const rawSentences = cleanedPageText.split(/(?<=[.!?])\s+/);
-
-      // Palavras específicas principais (ex: artrite, reumatoide, autoimune, lupus)
       const specificKeywords = keywordObjs.filter(k => k.weight > 1);
 
-      let scoredSentences = [];
-
-      rawSentences.forEach((sentence, index) => {
-        const clean = sentence.trim();
-        if (clean.length < 25 || clean.length > 460 || clean.endsWith('?')) return;
-
-        const normSentence = normalizeText(clean);
-        let score = 0;
-        let specificHits = 0;
-
-        keywordObjs.forEach(kw => {
-          const res = textHasKeyword(normSentence, kw);
-          if (res.found) {
-            score += res.fuzzy ? kw.weight * 2 : kw.weight * 3;
-            if (kw.weight > 1) specificHits++;
-          }
-        });
-
-        // Se a pergunta tem termos específicos e a frase não toca em nenhum deles, descarta
-        if (specificKeywords.length > 0 && specificHits === 0) return;
-
-        // Penaliza frases que focam em "causa" ou "fator reumatoide" quando a pergunta não pediu isso
-        if (!askedCause && /\bcausa\b|\bcausas\b|\betiologia\b|\bnao e completamente compreendida\b/.test(normSentence)) {
-          score -= 6;
-        }
-        if (!askedFactor && /\bfator reumatoide\b/.test(normSentence) && specificHits <= 1) {
-          score -= 5;
-        }
-
-        if (score > 0) {
-          scoredSentences.push({ text: clean, score, index, specificHits });
-        }
+      const best = matches[0];
+      const candidates = best.rankedSentences.filter(s => {
+        if (s.sScore <= 0 || s.text.endsWith('?')) return false;
+        const sNorm = normalizeText(s.text);
+        if (specificKeywords.length > 0 && !specificKeywords.some(k => textHasKeyword(sNorm, k).found)) return false;
+        if (!askedCause && /\bcausa\b|\bcausas\b|\betiologia\b|\bnao e completamente compreendida\b/.test(sNorm)) return false;
+        if (!askedFactor && /\bfator reumatoide\b/.test(sNorm) && s.sDistinct <= 1) return false;
+        return true;
       });
 
-      scoredSentences.sort((a, b) => b.score - a.score);
+      let mainExcerpt = '';
+      let extraExcerpts = [];
 
-      if (scoredSentences.length === 0) {
-        return `<p class="text-sm text-slate-700 leading-relaxed">${highlightTerms(cleanedPageText.slice(0, 420), keywordObjs)}...</p>`;
-      }
-
-      const primary = scoredSentences[0];
-      // Só junta a frase seguinte se ela também falar de algum termo específico da pergunta e não desviar para causa/fator
-      const nextRaw = rawSentences[primary.index + 1];
-      let mainText = primary.text;
-      if (nextRaw) {
-        const nextClean = nextRaw.trim();
-        const nextNorm = normalizeText(nextClean);
-        const nextHitsSpecific = specificKeywords.some(k => textHasKeyword(nextNorm, k).found);
-        const nextOffTopic = (!askedCause && /\bcausa\b|\betiologia\b/.test(nextNorm)) || (!askedFactor && /\bfator reumatoide\b/.test(nextNorm));
-        if (nextClean.length >= 20 && nextClean.length <= 320 && !nextClean.endsWith('?') && nextHitsSpecific && !nextOffTopic) {
-          mainText += ' ' + nextClean;
+      if (candidates.length > 0) {
+        const topSent = candidates[0];
+        // Tenta incluir a frase imediatamente adjacente se ela fizer parte da mesma ideia
+        const allSents = best.text.split(/(?<=[.!?])\s+/);
+        const nextSent = allSents[topSent.idx + 1];
+        mainExcerpt = topSent.text;
+        if (nextSent && nextSent.trim().length >= 20 && nextSent.trim().length <= 280 && !nextSent.trim().endsWith('?')) {
+          const nextNorm = normalizeText(nextSent);
+          const nextOffTopic = (!askedCause && /\bcausa\b|\betiologia\b/.test(nextNorm)) || (!askedFactor && /\bfator reumatoide\b/.test(nextNorm));
+          if (!nextOffTopic) {
+            mainExcerpt += ' ' + nextSent.trim();
+          }
         }
+
+        extraExcerpts = candidates
+          .slice(1)
+          .filter(c => Math.abs(c.idx - topSent.idx) > 1 && c.sScore >= topSent.sScore * 0.45)
+          .slice(0, 2);
+      } else {
+        mainExcerpt = best.text.slice(0, 380) + '...';
       }
 
-      const extraPoints = scoredSentences
-        .slice(1)
-        .filter(s => Math.abs(s.index - primary.index) > 1 && s.score >= primary.score * 0.5)
-        .slice(0, 2);
+      const otherSources = matches.slice(1, 3).filter(m => m.fileName !== best.fileName || m.page !== best.page);
 
       let html = `
         <div class="space-y-4 text-sm text-slate-800 leading-relaxed">
-          <div class="bg-emerald-50/80 p-4 rounded-xl border border-emerald-200/80 shadow-sm">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block mb-1">🎯 Resposta Direta (Baseada no Material):</span>
-            <p class="text-slate-800 leading-relaxed">${highlightTerms(mainText, keywordObjs)}</p>
+          <div class="bg-emerald-50/80 p-4 rounded-xl border border-emerald-200/80">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-800 block mb-1">🎯 Trecho Mais Direto do Material:</span>
+            <p class="text-slate-800 leading-relaxed">${highlightTerms(mainExcerpt, keywordObjs)}</p>
           </div>
       `;
 
-      if (extraPoints.length > 0) {
+      if (extraExcerpts.length > 0) {
         html += `
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📌 Pontos relacionados na mesma página:</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">📌 Outros trechos relacionados nesta página:</p>
             <ul class="list-disc pl-5 space-y-2 text-slate-700 text-[13px]">
-              ${extraPoints.map(p => `<li>${highlightTerms(p.text, keywordObjs)}</li>`).join('')}
+              ${extraExcerpts.map(ex => `<li>${highlightTerms(ex.text, keywordObjs)}</li>`).join('')}
             </ul>
           </div>
         `;
       }
 
-      const otherSources = topMatches.slice(1, 3).filter(m => m.fileName !== bestPage.fileName || m.page !== bestPage.page);
       if (otherSources.length > 0) {
         html += `
           <div class="pt-2 border-t border-slate-100">
-            <p class="text-[11px] font-semibold text-slate-500">📚 Outros locais onde esse assunto também aparece:</p>
+            <p class="text-[11px] font-semibold text-slate-500">📚 Outras páginas/arquivos que também citam os termos:</p>
             <div class="flex flex-wrap gap-2 mt-1.5">
               ${otherSources.map(s => `<span class="text-[11px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md border border-slate-200">${s.fileName} (Pág. ${s.page})</span>`).join('')}
             </div>
@@ -706,107 +657,53 @@
       return html;
     }
 
-    // Avaliação de AFIRMAÇÃO focada nas frases específicas correspondentes
-    function evaluateStatement(rawStatement, topMatches, keywordObjs) {
+    // Conferência de ALTERNATIVA / V ou F: transparente e focada em ajudar você a checar na prova
+    const ALERT_WORDS = ['nao', 'nunca', 'jamais', 'ausencia', 'ausente', 'sempre', 'apenas', 'somente', 'exclusivamente', 'unico', 'unica', 'todos', 'todas', 'nenhum', 'nenhuma', 'impede', 'impedem', 'bloqueia', 'bloqueiam'];
+
+    function renderStatementView(rawStatement, matches, keywordObjs) {
       const stmtNorm = normalizeText(rawStatement);
-      const stmtMarkers = detectMarkers(stmtNorm);
-      const bestPage = topMatches[0];
-      const sentences = cleanPdfText(bestPage.text).split(/(?<=[.!?])\s+/).filter(s => s.trim().length >= 20);
+      const stmtTokens = stmtNorm.split(/[^a-z0-9]+/).filter(Boolean);
+      const foundAlertWords = [...new Set(ALERT_WORDS.filter(w => stmtTokens.includes(w)))];
 
-      const rankedSentences = sentences.map((s, idx) => {
-        const sNorm = normalizeText(s);
-        let hits = 0;
-        keywordObjs.forEach(kw => {
-          if (textHasKeyword(sNorm, kw).found) hits += kw.weight;
-        });
-        return { text: s.trim(), idx, hits, norm: sNorm };
-      }).sort((a, b) => b.hits - a.hits);
-
-      const evidenceList = rankedSentences.slice(0, 2);
-      // Avalia o contraste especificamente contra as frases de evidência encontradas (não a página inteira)
-      const focusedEvidenceNorm = evidenceList.map(e => e.norm).join(' ');
-      const evMarkers = detectMarkers(focusedEvidenceNorm);
-
-      const conflicts = [];
-      stmtMarkers.polarities.forEach(sp => {
-        const matchEv = evMarkers.polarities.find(ep => ep.pairIdx === sp.pairIdx && ep.side !== sp.side);
-        if (matchEv) {
-          conflicts.push(`Oposição de sentido: a afirmação usa "<strong>${sp.sample}</strong>", enquanto o trecho do material traz "<strong>${matchEv.sample}</strong>".`);
-        }
-      });
-
-      const alerts = [...conflicts];
-      const notes = [];
-
-      // Se a afirmação nega algo diretamente (ex: "não tem", "não possui") sobre os conceitos encontrados, alerta forte
-      if (stmtMarkers.negations.length > 0 && evMarkers.negations.length === 0) {
-        alerts.push(`A afirmação traz negação/restrição (<strong>${stmtMarkers.negations.join(', ')}</strong>) que não aparece no trecho correspondente do material.`);
-      } else if (stmtMarkers.negations.length === 0 && evMarkers.negations.length > 0) {
-        alerts.push(`O trecho do material contém negação/restrição (<strong>${evMarkers.negations.join(', ')}</strong>) que não consta na afirmação.`);
-      }
-
-      if (stmtMarkers.absolutes.length > 0) {
-        notes.push(`Termos absolutos/restritivos presentes na afirmação: <strong>${stmtMarkers.absolutes.join(', ')}</strong>.`);
-      }
-
-      const importantMissing = bestPage.missingKeywords.filter(k => k.weight > 1);
-      if (importantMissing.length > 0) {
-        notes.push(`Termos específicos da afirmação não encontrados nesta página: <strong>${importantMissing.map(m => m.exact).join(', ')}</strong>.`);
-      }
-
-      const coverageRatio = keywordObjs.length > 0 ? bestPage.distinctMatches / keywordObjs.length : 0;
-
-      let verdictBadge = '';
-      let verdictBoxClass = '';
-      let verdictSummary = '';
-
-      if (alerts.length > 0) {
-        verdictBadge = '⚠️ Divergência ou Ponto de Atenção (Confira com Cuidado)';
-        verdictBoxClass = 'bg-rose-50 border-rose-200 text-rose-950';
-        verdictSummary = 'Foi identificada diferença de negação ou sentido entre a afirmação e o trecho correspondente no material. Não marque como compatível sem conferir o texto.';
-      } else if (coverageRatio >= 0.55 && notes.length === 0) {
-        verdictBadge = '✅ Compatível com o Material Encontrado';
-        verdictBoxClass = 'bg-emerald-50 border-emerald-200 text-emerald-950';
-        verdictSummary = 'Os principais conceitos da afirmação convergem com os trechos localizados sem oposição ou negação divergente.';
-      } else {
-        verdictBadge = '🔎 Parcial / Requer Conferência no Texto';
-        verdictBoxClass = 'bg-amber-50 border-amber-200 text-amber-950';
-        verdictSummary = 'Há relação temática com o material, mas vale conferir os trechos abaixo para confirmar todos os detalhes da afirmação.';
-      }
-
-      const reasonsList = [...alerts, ...notes];
+      const best = matches[0];
+      const topSentences = best.rankedSentences.filter(s => s.sScore > 0).slice(0, 3);
+      const missingSpecific = best.missingKeywords.filter(k => k.weight > 1);
 
       return `
         <div class="space-y-4 text-sm text-slate-800 leading-relaxed">
-          <div class="p-4 rounded-xl border ${verdictBoxClass} space-y-1.5">
-            <div class="font-bold text-sm">${verdictBadge}</div>
-            <p class="text-xs leading-relaxed">${verdictSummary}</p>
+          <div class="p-4 rounded-xl border ${foundAlertWords.length > 0 ? 'bg-amber-50 border-amber-200 text-amber-950' : 'bg-slate-50 border-slate-200 text-slate-800'} space-y-1.5">
+            <div class="font-bold text-xs uppercase tracking-wide">
+              ${foundAlertWords.length > 0 ? '🔎 Pontos de Atenção na Alternativa (Confira com o Trecho)' : '🔎 Trechos Encontrados para Conferência'}
+            </div>
+            <p class="text-xs leading-relaxed">
+              ${
+                foundAlertWords.length > 0
+                  ? `A alternativa contém termos de negação, restrição ou generalização (<strong>${foundAlertWords.join(', ')}</strong>). Compare com atenção o que o material diz abaixo antes de marcar.`
+                  : `Não há palavra de negação ou termo absoluto explícito na alternativa. Compare os conceitos abaixo com o trecho do material.`
+              }
+            </p>
+            ${
+              missingSpecific.length > 0
+                ? `<p class="text-xs text-slate-700 pt-1">Termos específicos da alternativa que não apareceram nesta página: <strong>${missingSpecific.map(m => m.exact).join(', ')}</strong>.</p>`
+                : ''
+            }
           </div>
 
           <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1">
-            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Afirmação avaliada</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Alternativa conferida</span>
             <p class="text-xs sm:text-sm text-slate-800 font-medium">"${rawStatement}"</p>
           </div>
 
           <div class="space-y-2">
-            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Por que essa leitura foi apontada:</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">O que consta no material (${best.fileName} — Pág. ${best.page}):</p>
             ${
-              reasonsList.length > 0
-                ? `<ul class="list-disc pl-5 space-y-1.5 text-xs sm:text-[13px] text-slate-700">${reasonsList.map(r => `<li>${r}</li>`).join('')}</ul>`
-                : `<p class="text-xs text-slate-600">Os conceitos centrais aparecem alinhados ao trecho encontrado sem conflito direto de sentido ou negação.</p>`
+              topSentences.length > 0
+                ? `<div class="space-y-2">
+                    ${topSentences.map(s => `<div class="text-xs sm:text-[13px] text-slate-700 bg-white p-3.5 rounded-xl border border-slate-200 leading-relaxed">${highlightTerms(s.text, keywordObjs)}</div>`).join('')}
+                   </div>`
+                : `<div class="text-xs text-slate-600 bg-white p-3.5 rounded-xl border border-slate-200">${highlightTerms(best.text.slice(0, 380), keywordObjs)}...</div>`
             }
           </div>
-
-          ${
-            evidenceList.length > 0
-              ? `<div class="space-y-2 pt-1">
-                  <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Trechos mais próximos no material (${bestPage.fileName} — Pág. ${bestPage.page}):</p>
-                  <div class="space-y-2">
-                    ${evidenceList.map(ev => `<div class="text-xs text-slate-700 bg-white p-3 rounded-xl border border-slate-200 leading-relaxed">${highlightTerms(ev.text, keywordObjs)}</div>`).join('')}
-                  </div>
-                </div>`
-              : ''
-          }
         </div>
       `;
     }
@@ -816,7 +713,7 @@
       if (!target) return;
       const plain = target.innerText.trim();
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(plain).then(() => alert('Resposta copiada!'));
+        navigator.clipboard.writeText(plain).then(() => alert('Copiado!'));
       } else {
         const area = document.createElement('textarea');
         area.value = plain;
@@ -824,7 +721,7 @@
         area.select();
         document.execCommand('copy');
         document.body.removeChild(area);
-        alert('Resposta copiada!');
+        alert('Copiado!');
       }
     };
 
@@ -838,8 +735,8 @@
       searchInput.focus();
       document.getElementById('resultsArea').innerHTML = `
         <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-400">
-          <span class="text-3xl block mb-2">💡</span>
-          <p class="text-sm">Envie os arquivos da matéria, escolha <strong>Pergunta</strong> ou <strong>Conferir Afirmação</strong> e faça sua consulta.</p>
+          <span class="text-3xl block mb-2">📌</span>
+          <p class="text-sm">Escolha <strong>Pergunta</strong> ou <strong>Conferir Alternativa</strong>, digite ou cole o texto e localize os trechos do seu material com rapidez.</p>
         </div>
       `;
     };
@@ -852,7 +749,7 @@
       }
     });
 
-    async function performSearch() {
+    function performSearch() {
       const rawQuery = searchInput.value.trim();
       const resultsArea = document.getElementById('resultsArea');
       if (!rawQuery) return;
@@ -866,15 +763,15 @@
       saveHistoryItem(rawQuery, currentMode);
 
       const keywordObjs = processQueryKeywords(rawQuery);
-      let matches = searchInFiles(files, keywordObjs);
+      let matches = findBestMatches(files, keywordObjs);
 
       if (matches.length === 0) {
         let otherHits = [];
         Object.keys(notebooks).forEach(nbName => {
           if (nbName === currentNotebook) return;
-          const found = searchInFiles(notebooks[nbName] || [], keywordObjs);
+          const found = findBestMatches(notebooks[nbName] || [], keywordObjs);
           if (found.length > 0) {
-            otherHits.push({ nbName, count: found.length, top: found[0] });
+            otherHits.push({ nbName, top: found[0] });
           }
         });
 
@@ -882,7 +779,7 @@
         if (otherHits.length > 0) {
           otherNotebookSuggestion = `
             <div class="pt-2 border-t border-amber-200/80 text-xs">
-              <strong>Encontrei menções em outro caderno:</strong>
+              <strong>Encontrei em outro caderno:</strong>
               ${otherHits.map(o => `<button type="button" onclick="currentNotebook='${o.nbName.replace(/'/g, "\\'")}'; renderNotebooks(); renderFiles(); performSearch();" class="ml-1 underline font-semibold text-amber-950">${o.nbName} (${o.top.fileName}, pág. ${o.top.page})</button>`).join(' · ')}
             </div>
           `;
@@ -890,9 +787,9 @@
 
         resultsArea.innerHTML = `
           <div class="bg-amber-50 p-5 rounded-2xl border border-amber-200 text-amber-900 space-y-2.5">
-            <h3 class="font-bold text-xs uppercase tracking-wide text-amber-800">💡 Sem correspondência clara em "${currentNotebook}"</h3>
+            <h3 class="font-bold text-xs uppercase tracking-wide text-amber-800">💡 Nada encontrado em "${currentNotebook}"</h3>
             <p class="text-xs leading-relaxed">
-              Não encontrei correspondência suficiente nos arquivos deste caderno. Tente usar o nome central do conceito ou revisar a ortografia.
+              Tente usar os termos principais do conceito ou conferir se o arquivo está neste caderno.
             </p>
             ${otherNotebookSuggestion}
           </div>
@@ -901,35 +798,18 @@
       }
 
       const topMatch = matches[0];
-      let bodyHTML = '';
-
-      if (currentMode === 'question') {
-        if (hasBuiltInAI) {
-          try {
-            const contextText = matches.slice(0, 2).map(m => `[Arquivo: ${m.fileName}, Pág. ${m.page}]: ${m.text.slice(0, 1800)}`).join('\n\n');
-            const session = await window.ai.languageModel.create({
-              systemPrompt: "Você é um assistente de estudos. Responda à pergunta do aluno de forma clara, didática e direta para uma prova, usando EXCLUSIVAMENTE os trechos fornecidos. Não invente informações externas."
-            });
-            const aiResponse = await session.prompt(`Trechos do material:\n${contextText}\n\nPergunta: ${rawQuery}`);
-            bodyHTML = `<div class="text-sm text-slate-800 leading-relaxed whitespace-pre-line bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">${aiResponse}</div>`;
-          } catch (err) {
-            bodyHTML = synthesizeQuestionAnswer(rawQuery, matches, keywordObjs);
-          }
-        } else {
-          bodyHTML = synthesizeQuestionAnswer(rawQuery, matches, keywordObjs);
-        }
-      } else {
-        bodyHTML = evaluateStatement(rawQuery, matches, keywordObjs);
-      }
+      const bodyHTML = currentMode === 'question'
+        ? renderQuestionView(rawQuery, matches, keywordObjs)
+        : renderStatementView(rawQuery, matches, keywordObjs);
 
       const oppositeMode = currentMode === 'question' ? 'statement' : 'question';
-      const oppositeLabel = currentMode === 'question' ? 'Conferir como Afirmação' : 'Ver como Pergunta';
+      const oppositeLabel = currentMode === 'question' ? 'Conferir como Alternativa' : 'Ver como Pergunta';
 
       resultsArea.innerHTML = `
         <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <span class="text-xs font-bold text-emerald-700 uppercase tracking-wide flex items-center gap-1.5">
-              <span>${currentMode === 'question' ? '✨' : '🔍'}</span> ${currentMode === 'question' ? 'Resposta Encontrada' : 'Análise da Afirmação'}
+              <span>${currentMode === 'question' ? '📖' : '✅'}</span> ${currentMode === 'question' ? 'Trechos Localizados' : 'Conferência no Material'}
             </span>
             <span class="text-[11px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-medium">
               Fonte principal: ${topMatch.fileName} — Pág. ${topMatch.page}
@@ -943,7 +823,7 @@
           <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
             <div class="flex flex-wrap items-center gap-2">
               <button type="button" onclick="copyCurrentResult()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition">
-                📋 Copiar resultado
+                📋 Copiar trecho
               </button>
               <button type="button" onclick="switchModeAndSearch('${oppositeMode}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-200 transition">
                 🔄 ${oppositeLabel}
